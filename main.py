@@ -398,7 +398,7 @@ async def main(gameStartedStatus):
                         # Play Again        
                             if mousePos[0] >= 72 and mousePos[0] <= 525:
                                 won = False
-                                game(True)
+                                main(True)
                                 
                         # Exit
                             if mousePos[0] >= 1376 and mousePos[0] <= 1540:
