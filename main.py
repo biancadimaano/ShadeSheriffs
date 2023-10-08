@@ -402,6 +402,7 @@ async def main(gameStartedStatus):
                                 
                         # Exit
                             if mousePos[0] >= 1376 and mousePos[0] <= 1540:
+                                asyncio.stop(main(True))
                                 pygame.quit()
                                 quit() 
 
