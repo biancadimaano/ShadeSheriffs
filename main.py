@@ -61,12 +61,13 @@ gameScreen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 
 Creates a display with an image background and loads it over top the current display.
 PARAMATERS:
-- surface: current pygame display to load the new display onto
-- image: image to load onto the display
+    - surface: current pygame display to load the new display onto
+    - image: image to load onto the display
 PRECONDITIONS:
-- image is a valid image file type (png, jpg, gif, bmp)
+    - image is a valid image file type (png, jpg, gif, bmp)
 
 '''
+
 def drawScreen(surface, image):
     screen = pygame.Surface((SCREENWIDTH, SCREENHEIGHT))
     screenImage = pygame.image.load(image)
@@ -77,13 +78,13 @@ def drawScreen(surface, image):
 
 Loads an image and draws it onto the specified display, at the coordinate (x,y)
 PARAMETERS:
-- surface: pygame display to load the image onto
-- image: image to load onto the display
-- x: x coordinate
-- y: y coordinate
+    - surface: pygame display to load the image onto
+    - image: image to load onto the display
+    - x: x coordinate
+    - y: y coordinate
 PRECONDITIONS:
-- image is a valid image file type (png, jpg, gif, bmp)
-- x and y are of type int
+    - image is a valid image file type (png, jpg, gif, bmp)
+    - x and y are of type int
 
 '''
 
@@ -95,11 +96,10 @@ def drawImage(surface, image, x, y):
 
 Checks if the tube is empty
 PARAMETERS:
-- tube: an array containing four elements, representing colors in the tube
-PRECONDITIONS:
-- tube is of a type able to be indexed 
+    - tube: an array containing four elements, representing colors in the tube
 
 '''
+
 def tubeIsEmpty(tube):
     return tube[3] == ''
 
@@ -107,9 +107,7 @@ def tubeIsEmpty(tube):
 
 Returns the top most index of the tube THAT CONTAINS A COLOR
 PARAMETERS:
-- tube: an array containing four elements, representing colors in the tube
-PRECONDITIONS:
-- tube is of a type able to be indexed 
+    - tube: an array containing four elements, representing colors in the tube
 
 '''
 
@@ -122,15 +120,14 @@ def findTop(tube):
 
 '''
 Returns an array containing the indices of tube that are a range of the same color, starting from the top of tube.
-ex: If tube = ['',red,red,blue] then rangeOfPour = [1,2]
+ex: If the tube we are pouring from = ['',red,red,blue] then rangeOfPour = [1,2]
 PARAMETERS:
-- tube: an array containing four elements, representing colors in the tube
-- pourFrom: index of the entire tube array we are pouring from
-- pourFromIndex: index of the specific color being poured (topmost element of pourFrom)
+    - tube: an array containing four elements, representing colors in the tube
+    - pourFrom: index of the entire tube array we are pouring from
+    - pourFromIndex: index of the specific color being poured (topmost element of pourFrom)
 PRECONDITIONS:
-- tube is of a type able to be indexed
-- pourFrom is a valid tube
-- pourFromIndex is a valid index containing a color in pourFrom
+    - pourFrom is a valid tube
+    - pourFromIndex is a valid index containing a color in pourFrom
 '''
 
 def rangeOfPour(tube, pourFrom, pourFromIndex):
@@ -143,6 +140,18 @@ def rangeOfPour(tube, pourFrom, pourFromIndex):
             else:
                 break
     return pourRange
+
+'''
+
+Creates and returns an array of arrays, of length numTubes + 2 (numTubes + 2 empty tubes)
+The arrays contained will have numTubes FULLY COMPLETED tubes (sorted already)
+PARAMTERS:
+    - availableColors: array of color hex codes that are able to be chosen
+    - numTubes: number of tubes/shades the user chooses to play with
+PRECONDITIONS:
+    - length of availableColors >= max numTubes able to be chosen
+    
+'''
 
 def createTubes(availableColors, numTubes):
     
@@ -161,45 +170,14 @@ def createTubes(availableColors, numTubes):
 
     return tubeArray
 
-def drawTubes(tubeArrays, numTubes, surface, width, height, margins, x ,y, tubeCol):
+'''
 
-    drawScreen(surface,"gamebackground.png")
+Unsorts the sorted tubes for the user to sort. 
+Returns an array of mixed tubes.
+* Created a function to mix up tubes instead of randomly choosing colors in each tube to ensure
+  that it is 100% possible for the tubes to be sorted.
 
-    yOriginal = y
-    xOriginal = x
-    tubesDrawn = 0
-    gameTubes = []
-    
-    # Find number of rows in the first row:
-    if numTubes % 2 == 0:
-        tubesInFirstRow = (numTubes + 2) // 2
-    else:
-        tubesInFirstRow = ((numTubes + 2) // 2) + 1
-    # Draw first row of tubes
-
-    for i in range(numTubes+2):
-        y = yOriginal
-        gameTubes.append(pygame.draw.rect(surface, tubeCol, pygame.Rect(x-margins, y-height, width+(2*margins), (5*height)+margins)))
-        y = yOriginal
-
-        for k in range(4):
-            if tubeArrays[i][k] == '':
-                y+=height
-                continue
-            pygame.draw.rect(surface, tubeArrays[i][k], pygame.Rect(x, y, width, height))
-            y += height
-        x+=2*width
-        tubesDrawn += 1
-        if tubesDrawn == tubesInFirstRow:
-            yOriginal += height*7
-            
-            if numTubes % 2 == 0:
-                x = xOriginal
-            else:
-                x = xOriginal + width
-
-    pygame.display.update()
-    return gameTubes 
+'''
 
 def mixTubes(tubeArrays, numTubes):
 
@@ -263,6 +241,70 @@ def mixTubes(tubeArrays, numTubes):
             # print("mixedTubes: ", mixedTubes)
             return mixedTubes
 
+'''
+Draws the tubes to the pygame screen using the pygame.draw.rect() function
+Returns an array of Rect objects so we can use methods of the Rect class (from pygame) in the main game function.
+PARAMETERS:
+    - tubeArrays: array of arrays of the mixed tubes, containing color hex codes, to be drawn to the screen
+    - numTubes: number of tubes/shades the user chooses to play with
+    - surface: pygame display to draw on
+    - width: width of the surface
+    - height: height of the surface
+    - margins: how many pixels thick the tube outlines will be
+    - x,y: (x,y) coordinate where the tubes will be drawn
+    - tubeCol: color of the tube outlines
+PRECONDITIONS:
+    - x >= 0 and x <= screen width, y >= 0 and y <= screen height
+    - tubeCol is a valid color name or hex code
+'''
+
+def drawTubes(tubeArrays, numTubes, surface, width, height, margins, x ,y, tubeCol):
+
+    drawScreen(surface,"gamebackground.png")
+
+    yOriginal = y
+    xOriginal = x
+    tubesDrawn = 0
+    gameTubes = []
+    
+    # Find number of rows in the first row:
+    if numTubes % 2 == 0:
+        tubesInFirstRow = (numTubes + 2) // 2
+    else:
+        tubesInFirstRow = ((numTubes + 2) // 2) + 1
+    # Draw first row of tubes
+
+    for i in range(numTubes+2):
+        y = yOriginal
+        gameTubes.append(pygame.draw.rect(surface, tubeCol, pygame.Rect(x-margins, y-height, width+(2*margins), (5*height)+margins)))
+        y = yOriginal
+
+        for k in range(4):
+            if tubeArrays[i][k] == '':
+                y+=height
+                continue
+            pygame.draw.rect(surface, tubeArrays[i][k], pygame.Rect(x, y, width, height))
+            y += height
+        x+=2*width
+        tubesDrawn += 1
+        if tubesDrawn == tubesInFirstRow:
+            yOriginal += height*7
+            
+            if numTubes % 2 == 0:
+                x = xOriginal
+            else:
+                x = xOriginal + width
+
+    pygame.display.update()
+    return gameTubes 
+
+'''
+
+Checks if the player has won the game or not
+Returns true (won) or false (haven't won yet)
+
+'''
+
 def checkWinner(tubeArrays, numTubes):
     organizedTubesCount = 0
     sameColorInTube = 0
@@ -278,11 +320,21 @@ def checkWinner(tubeArrays, numTubes):
         sameColorInTube = 0
     return organizedTubesCount == numTubes
 
+'''
+
+Manipulates and updates the array of tubes to update the player's choices
+Returns an updated array of tubes
+PRECONDITIONS:
+    - pourFrom, pourTo is a valid tube index
+    - currentTubeTop is the index of the top-most element of the current tube chosen
+        - 0 <= currentTubeTop <= 3
+    - clickCount is either 0,1, or 2
+
+'''
+
 def playGame(surface, tubesToSort, pourFrom, pourTo, currentTubeTop, clickCount):
 
     gameTubes = tubesToSort
-    
-    # 130 830
 
     if pourFrom[0] == '':
         # Will draw an image that says " "
@@ -315,6 +367,14 @@ def playGame(surface, tubesToSort, pourFrom, pourTo, currentTubeTop, clickCount)
         gameTubes[(pourFrom[1])][pourRange[i]] = ''
 
     return gameTubes
+
+'''
+
+Function to call the game loop and pygame event handler
+PARAMETERS:
+    - gameStartedStatus: boolean type, True or False if the game has already been started before 
+
+'''
 
 def game(gameStartedStatus):
     fromTubeSelected = None
