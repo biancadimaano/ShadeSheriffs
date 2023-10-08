@@ -21,6 +21,7 @@ Completed/Last Modified 10/5/2023
 import random
 import pygame
 import copy
+import asyncio
 pygame.init()
 
 # CONSTANTS
@@ -376,7 +377,7 @@ PARAMETERS:
 
 '''
 
-def game(gameStartedStatus):
+async def main(gameStartedStatus):
     fromTubeSelected = None
     toTubeSelected = None
     clickCount = 0 
@@ -486,10 +487,11 @@ def game(gameStartedStatus):
                                                 drawScreen(gameScreen, "winscreen.png")
                                                 won = True
                                         pygame.display.update() 
+                await asyncio.sleep(0)
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit() 
         pygame.display.update()
 
-game(False)
+asyncio.run(main(False))
 
